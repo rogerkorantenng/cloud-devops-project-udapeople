@@ -9,6 +9,9 @@ commands:
         type: string  
     steps:
       - run:
+          name: Echo workflow ID that is going be be destroyed
+          command: echo "WorkflowID=${CIRCLE_WORKFLOW_ID:0:7}"
+      - run:
           name: Destroy backend stack
           when: on_fail
           command: |
@@ -50,7 +53,7 @@ jobs:
       - run:
           name: Build frontend
           command: |
-            cd frontend
+            cd ./frontend
             npm i
             npm run build
       - save_cache:
@@ -73,7 +76,7 @@ jobs:
       - run:
           name: Backend build
           command: |
-            cd backend
+            cd ./backend
             npm i
             npm run build
       - save_cache:
@@ -96,7 +99,7 @@ jobs:
       - run:
           name: Test frontend
           command: |
-            cd frontend
+            cd ./frontend
             npm i
             npm run test
       - slack/notify:
@@ -116,7 +119,7 @@ jobs:
       - run:
           name: Test backend
           command: |
-            cd backend
+            cd ./backend
             npm run test
       - slack/notify:
           branch_pattern: .+
@@ -135,7 +138,7 @@ jobs:
       - run:
           name: Scan frontend
           command: |
-            cd frontend
+            cd ./frontend
             npm audit --audit-level=critical
       - slack/notify:
           branch_pattern: .+
@@ -154,7 +157,7 @@ jobs:
       - run:
           name: Scan backend
           command: |
-            cd backend
+            cd ./backend
             npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
       - slack/notify:
@@ -189,13 +192,13 @@ jobs:
               --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"
       - run:
-          name: Save backend IP to memory
+          name: Sent backend IP to memstash
           command: |
             export BACKEND_IP=$(aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --filters "Name=tag:project,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --output text)
-            curl -H "Content-Type: text/plain" -H "token: 7079126b-54c1-4ae1-b7cf-577d8a27c76f" --request PUT --data "$BACKEND_IP" https://api.memstash.io/values/backend_ip
+            curl -H "Content-Type: text/plain" -H "token: 7079126b-54c1-4ae1-b7cf-577d8a27c76f" --request PUT --data "$BACKEND_IP" https://api.memstash.io/values/BACKEND_IP_${CIRCLE_WORKFLOW_ID:0:7}
       - run:
           name: Add backend IP to ansible inventory
           command: echo $BACKEND_IP >> ./.circleci/ansible/inventory.txt
@@ -236,17 +239,26 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
+      - restore_cache:
+          keys: [backend-build]
       - run:
-          name: Run migrations
+          name: Run database migration
           command: |
-            # Your code here
-            exit 1
+            cd ./backend
+            export DB_MIGRATION_STATUS=$(npm run migrations)
       - run:
-          name: Send migration results to memstash
+          name: Send database migration status to memstash
           command: |
-            # Your code here
-            exit 1
-     # Here's where you will add some code to rollback on failure      
+            if echo "$DB_MIGRATION_STATUS" | grep "has been executed successfully"
+            then
+              echo "Database migration has been executed successfully"
+              curl -H "Content-Type: text/plain" -H "token: 7079126b-54c1-4ae1-b7cf-577d8a27c76f" --request PUT --data "success" https://api.memstash.io/values/DB_MIGRATION_STATUS_${CIRCLE_WORKFLOW_ID:0:7}
+            else
+              echo "Database migration has failed, verify DB setup!"
+              curl -H "Content-Type: text/plain" -H "token: 7079126b-54c1-4ae1-b7cf-577d8a27c76f" --request PUT --data "failure" https://api.memstash.io/values/DB_MIGRATION_STATUS_${CIRCLE_WORKFLOW_ID:0:7}
+            fi
+      - destroy-environment:
+          workflowID: ${CIRCLE_WORKFLOW_ID:0:7}       
 
   deploy-frontend:
     docker:
