@@ -241,11 +241,15 @@ jobs:
       - checkout
       - restore_cache:
           keys: [backend-build]
+      - attach_workspace:
+          at: .
       - run:
           name: Run database migration
           command: |
             cd ./backend
+            npm i
             export DB_MIGRATION_STATUS=$(npm run migrations)
+            echo $DB_MIGRATION_STATUS
       - run:
           name: Send database migration status to memstash
           command: |
@@ -266,21 +270,38 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
+      - attach_workspace:
+          at: .
       - run:
           name: Install dependencies
           command: |
-            # your code here
+            yum install -y tar gzip curl
+            curl -sL https://rpm.nodesource.com/setup_10.x | bash -
+            yum install -y nodejs
+      - restore_cache:
+          keys: [frontend-build]
       - run:
           name: Get backend url
           command: |
-            # your code here
+            export BACKEND_IP=$(curl -H "token: 7079126b-54c1-4ae1-b7cf-577d8a27c76f" --request GET https://api.memstash.io/values/BACKEND_IP_${CIRCLE_WORKFLOW_ID:0:7})
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
       - run:
+          name: Build frontend
+          command: |
+            cd frontend
+            npm run build
+      - run:
           name: Deploy frontend objects
           command: |
-            # your code here
-      # Here's where you will add some code to rollback on failure      
+            cd frontend
+            aws s3 cp ./dist "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --recursive
+      - persist_to_workspace:
+          root: .
+          paths:
+            - frontend/dist
+      - destroy-environment:
+          workflowID: ${CIRCLE_WORKFLOW_ID:0:7}      
                     
   deploy-backend:
     docker:
@@ -288,17 +309,25 @@ jobs:
       - image: python:3.7-alpine3.11
     steps:
       - checkout
-      # Add ssh keys with fingerprint
-      # attach workspace
+      - attach_workspace:
+          at: .
+      - add_ssh_keys:
+          fingerprints: 
+            - "e2:c9:22:04:6c:5c:91:d9:6b:fa:69:21:5b:be:a7:ad"
+      - restore_cache:
+          keys: [backend-build]
       - run:
           name: Install dependencies
           command: |
-            # your code here
+            apk add --update ansible
+            pip install awscli
       - run:
           name: Deploy backend
           command: |
-            # your code here
-      # Here's where you will add some code to rollback on failure  
+            export ANSIBLE_HOST_KEY_CHECKING=false
+            ansible-playbook -i ./.circleci/ansible/inventory.txt ./.circleci/ansible/deploy-backend.yml
+      - destroy-environment:
+          workflowID: ${CIRCLE_WORKFLOW_ID:0:7}  
 
   smoke-test:
     docker:
@@ -364,32 +393,33 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only: [main]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
-      - deploy-backend:
-          requires: [run-migrations]
-      - smoke-test:
-          requires: [deploy-backend, deploy-frontend]
-      - cloudfront-update:
-          requires: [smoke-test]
-      - cleanup:
-          requires: [cloudfront-update]
+      # - build-frontend
+      # - build-backend
+      # - test-frontend:
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     requires: [build-backend]
+      # - scan-backend:
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     requires: [build-frontend]
+      # - deploy-infrastructure:
+      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      #     filters:
+      #       branches:
+      #         only: [main]
+      # - configure-infrastructure:
+      #     requires: [deploy-infrastructure]
+      # - run-migrations:
+      #     requires: [configure-infrastructure]
+      # - deploy-frontend:
+      #     requires: [run-migrations]
+      # - deploy-backend:
+      #     requires: [run-migrations]
+      # - smoke-test:
+      #     requires: [deploy-backend, deploy-frontend]
+      # - cloudfront-update:
+      #     requires: [smoke-test]
+      # - cleanup:
+      #     requires: [cloudfront-update]
+      - run-migrations
