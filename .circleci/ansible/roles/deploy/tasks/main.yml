@@ -9,11 +9,17 @@
     src: /root/project/backend.tar.gz
     dest: /home/ubuntu/
 
+- name: Stop and delete already running server
+  ignore_errors: yes
+  shell: |
+    pm2 stop backend
+    pm2 delete backend
+
 - name: Start server
   become: true
   shell: |
-    cd /home/ubuntu/backend/dist
-    pm2 start main.js --name backend
+    cd /home/ubuntu/backend
+    pm2 start npm --name backend -- start
     pm2 ls
 
   
