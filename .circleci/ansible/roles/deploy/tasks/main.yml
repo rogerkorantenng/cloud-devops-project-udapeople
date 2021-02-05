@@ -9,6 +9,13 @@
     src: /root/project/backend.tar.gz
     dest: /home/ubuntu/
 
+- name: Build backend
+  ignore_errors: yes
+  shell: |
+    cd /home/ubuntu/backend
+    npm i
+    npm run build
+
 - name: Stop and delete already running server
   ignore_errors: yes
   shell: |
