@@ -56,7 +56,7 @@ In this phase, you will add CircleCI jobs that execute Cloud Formation templates
 - Find the job named `deploy-infrastructure` in your config file
   - Add code to create your infrastructure using [CloudFormation templates](https://github.com/udacity/cdond-c3-projectstarter/tree/master/.circleci/files). Again, provide a screenshot demonstrating an appropriate job failure (failing for the right reasons). **[SCREENSHOT05]**
 
-![Job properly failing because of an error when creating infrastructure.](screenshots/SCREENSHOT05.png)
+![Job properly failing because of an error when creating infrastructure.](./../screenshots/SCREENSHOT05.png)
 
   - Select a Docker image that supports the AWS CLI
   - Create backend infrastructure by editing the step named `Ensure back-end infrastructure exists`. You'll notice you need to edit the `--tags`, `--stack-name`, and `--parameter-overrides` with your information. Make sure to remove each `#` to uncomment the lines after you've added your information.
@@ -162,7 +162,7 @@ All this automated deployment stuff is great, but what if there’s something we
     
 - Provide a screenshot for appropriate failure for the smoke test job. **[SCREENSHOT06]**
 
-![Job properly failing because of a failed smoke test.](screenshots/SCREENSHOT06.png)
+![Job properly failing because of a failed smoke test.](./../screenshots/SCREENSHOT06.png)
 
 #### 4. Rollback Phase
 
@@ -178,7 +178,7 @@ Of course, we all hope every pipeline follows the “happy path.” But any expe
 - No more jobs should run after these commands have executed.
 - Provide a screenshot for a successful rollback after a failed smoke test. **[SCREENSHOT07]**
 
-![Successful rollback job.](screenshots/SCREENSHOT07.png)
+![Successful rollback job.](./../screenshots/SCREENSHOT07.png)
 
 - Add these rollback commands to other jobs that might fail and need a rollback.
 
@@ -193,7 +193,7 @@ Assuming the smoke test came back clean, we should have a relatively high level 
     - Use a [CloudFormation template](https://github.com/udacity/cdond-c3-projectstarter/tree/master/.circleci/files) to change the origin of your CloudFront distribution to the new S3 bucket.
 - Provide a screenshot of the successful job. **[SCREENSHOT08]**
 
-![Successful promotion job.](screenshots/SCREENSHOT08.png)
+![Successful promotion job.](./../screenshots/SCREENSHOT08.png)
 
 - Provide the public URL for your CloudFront distribution (aka, your production front-end). **[URL03]**
 - Provide the public URL for your back-end server in EC2. **[URL04]**
@@ -218,10 +218,10 @@ The UdaPeople finance department likes it when your AWS bills are more or less t
       - Front-end stack
 - Provide a screenshot of the successful job. **[SCREENSHOT09]**
 
-![Successful cleanup job.](screenshots/SCREENSHOT09.png)
+![Successful cleanup job.](./../screenshots/SCREENSHOT09.png)
 
 #### Other Considerations
 
 - Make sure you only run deployment-related jobs on commits to the `master` branch. Provide screenshot of a build triggered by a non-master commit. It should only run the jobs prior to deployment. **[SCREENSHOT10]**
 
-![Deploy jobs only run on master](screenshots/SCREENSHOT10.png)
+![Deploy jobs only run on master](./../screenshots/SCREENSHOT10.png)

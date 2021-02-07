@@ -22,7 +22,7 @@ In order for server instances to speak to Prometheus, we need to install an “e
 - After deploy, ensure your back-end is being discovered by the Prometheus Server.
 - Provide a screenshot of a graph of your EC2 instance including available memory, available disk space, and CPU usage. **[SCREENSHOT11]**
 
-![Graphs of CPU, Disk and Memory utilization on systems being monitored.](screenshots/SCREENSHOT11.png)
+![Graphs of CPU, Disk and Memory utilization on systems being monitored.](./../screenshots/SCREENSHOT11.png)
 
 - Provide a public URL to your Prometheus Server. **[URL05]**
 
@@ -36,5 +36,5 @@ Now that Prometheus and our EC2 instance have an open line of communication, we 
 - Set up an alert for low memory or some condition you can control to intentionally cause an alert.
 - Provide a screenshot of an alert that was sent by Prometheus. **[SCREENSHOT12]**
 
-![Alerts from a failing system that is being monitored.](screenshots/SCREENSHOT12.png)
+![Alerts from a failing system that is being monitored.](./../screenshots/SCREENSHOT12.png)
 

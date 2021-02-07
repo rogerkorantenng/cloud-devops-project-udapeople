@@ -34,7 +34,7 @@ The goal of a build phase is to compile or lint the source code to check for syn
 - Throughout this project, you should have separate jobs for the front-end and back-end so that failure alerts are more descriptive.
 - Jobs should fail if code cannot be compiled (fail for the right reasons), and **a failed build should stop all future jobs.** 
 - We have provided an easy-to-fix compile error in the code to prove the jobs fail. Provide a screenshot of jobs that failed because of compile errors. **[SCREENSHOT01]**
-![Job properly failing because of compile errors.](screenshots/SCREENSHOT01.png)
+![Job properly failing because of compile errors.](./../screenshots/SCREENSHOT01.png)
 - Fix the compile error so that the pipeline can continue (see code-comment that guides you to the fix).
 
 #### 2. Test Phase
@@ -47,7 +47,7 @@ Unit tests are one of the many very important building blocks of a system that e
 - Remember, we separate the frontend and backend into separate jobs!
 - A unit test job should fail the job and prevent any future jobs from running.
 - We have provided one failing test in both front-end and back-end. Provide a screenshot of the failed unit tests in the "Test Failures" tab. **[SCREENSHOT02]**
-![Job properly failing because of test failures.](screenshots/SCREENSHOT02.png)
+![Job properly failing because of test failures.](./../screenshots/SCREENSHOT02.png)
 - Fix the unit tests and make the job succeed.
 
 #### 3. Analyze Phase
@@ -62,7 +62,7 @@ UdaPeople handles some private information like social security numbers, salary 
 npm audit --audit-level=critical
 ```
 - Job should fail if any major vulnerabilities are found (fail for the right reasons). We left you an intentional vulnerability to cause a failure. Provide a screenshot of jobs that failed because of vulnerable packages listed. **[SCREENSHOT03]**
-![Job properly failing because of security vulnerabilities.](screenshots/SCREENSHOT03.png)
+![Job properly failing because of security vulnerabilities.](./../screenshots/SCREENSHOT03.png)
 - Fix the vulnerability using the command below and re-run the job.
 ```bash
 npm audit fix --audit-level=critical --force
@@ -76,4 +76,4 @@ When a build fails for any reason, the UdaPeople dev team needs to know about it
 - Integrate Slack, email or another communication tool to receive alerts when jobs fail. Our examples are using Slack, but you should feel free to use the communication tool to which you are most accustomed.
 - Alerts should include a summary of what happened and a link to the job console output for quick troubleshooting.
 - Provide a screenshot of an alert from one of your failed builds. **[SCREENSHOT04]**
-![An alert when the build breaks.](screenshots/SCREENSHOT04.png)
+![An alert when the build breaks.](./../screenshots/SCREENSHOT04.png)
