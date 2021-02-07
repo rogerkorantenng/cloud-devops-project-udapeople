@@ -9,6 +9,7 @@ commands:
           name: Add env vars to .env file
           command: |
             echo ENVIRONMENT=$ENVIRONMENT > "./backend/.env"
+            echo NODE_ENV=$NODE_ENV >> "./backend/.env"
             echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> "./backend/.env"
             echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR >> "./backend/.env"
             echo TYPEORM_ENTITIES=$TYPEORM_ENTITIES >> "./backend/.env"
@@ -311,21 +312,20 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: Setup environment variables
-          command: |
-            echo ENVIRONMENT=production > "frontend/.env"
-            echo NODE_ENV=production >> "frontend/.env"
-            cat frontend/.env
-      - run:
-          name: Get backend url
+          name: Get backend url and setup environment variables
           command: |
             BACKEND_IP=$(curl -H "token: 7079126b-54c1-4ae1-b7cf-577d8a27c76f" --request GET https://api.memstash.io/values/BACKEND_IP_${CIRCLE_WORKFLOW_ID:0:7})
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
+            echo ENVIRONMENT=production > "frontend/.env"
+            echo NODE_ENV=production >> "frontend/.env"
+            echo API_URL=${API_URL} >> "frontend/.env"
+            cat frontend/.env
       - run:
           name: Build frontend
           command: |
             cd ./frontend
+            npm cache clean --force
             npm i
             npm run build
       - run:
