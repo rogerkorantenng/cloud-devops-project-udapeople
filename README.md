@@ -11,14 +11,14 @@ The following [slides](./presentation.pdf) explain the key benefits of CI/CD for
   - https://github.com/OlgaLyudchik/udacity-cloud-devops-project-udapeople
 
 - Public URL for the S3 Bucket (the green candidate frontend) [URL02]
-  - http://udapeople-c159e47.s3-website-us-west-2.amazonaws.com/index.html
+  - http://udapeople-f92c214.s3-website-us-west-2.amazonaws.com/index.html
 
 - Public URL for the CloudFront distribution (the blue production frontend) [URL03]
   - d1lhzqzgkfq7e8.cloudfront.net
 
 - Public URLs to deployed application backend in EC2 [URL04]
-  - ec2-18-237-168-206.us-west-2.compute.amazonaws.com
-  - http://ec2-18-237-168-206.us-west-2.compute.amazonaws.com:9100/metrics
+  - ec2-34-216-61-0.us-west-2.compute.amazonaws.com
+  - http://ec2-34-216-61-0.us-west-2.compute.amazonaws.com:9100/metrics
 
 - Public URL to the Prometheus server [URL05]
   - http://ec2-54-202-177-103.us-west-2.compute.amazonaws.com:9090
