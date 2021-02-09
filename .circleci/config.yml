@@ -9,7 +9,6 @@ commands:
           name: Add env vars to .env file
           command: |
             echo ENVIRONMENT=$ENVIRONMENT > "./backend/.env"
-            echo NODE_ENV=$NODE_ENV >> "./backend/.env"
             echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> "./backend/.env"
             echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR >> "./backend/.env"
             echo TYPEORM_ENTITIES=$TYPEORM_ENTITIES >> "./backend/.env"
@@ -71,7 +70,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-build]
+          keys: [frontend-build-cache]
       - run:
           name: Build frontend
           command: |
@@ -80,7 +79,7 @@ jobs:
             npm run build
       - save_cache:
           paths: [frontend/node_modules]
-          key: frontend-build
+          key: frontend-build-cache
       - slack/notify:
           branch_pattern: .+
           event: fail
@@ -94,7 +93,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build]
+          keys: [backend-build-cache]
       - run:
           name: Backend build
           command: |
@@ -103,7 +102,7 @@ jobs:
             npm run build
       - save_cache:
           paths: [backend/node_modules]
-          key: backend-build
+          key: backend-build-cache
       - slack/notify:
           branch_pattern: .+
           event: fail
@@ -117,7 +116,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-build]
+          keys: [frontend-build-cache]
       - run:
           name: Test frontend
           command: |
@@ -137,7 +136,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build]
+          keys: [backend-build-cache]
       - run:
           name: Test backend
           command: |
@@ -156,7 +155,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-build]
+          keys: [frontend-build-cache]
       - run:
           name: Scan frontend
           command: |
@@ -175,7 +174,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build]
+          keys: [backend-build-cache]
       - run:
           name: Scan backend
           command: |
@@ -272,7 +271,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build]
+          keys: [backend-build-cache]
       - attach_workspace:
           at: .
       - create-dotenv-file
@@ -282,7 +281,7 @@ jobs:
             cd ./backend
             pwd
             npm run migrations > migrations_log.txt
-            cat migrations_log.txt
+            cat ./migrations_log.txt
       - run:
           name: Send database migration status to memstash
           command: |
@@ -318,13 +317,13 @@ jobs:
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
             echo ENVIRONMENT=production > "frontend/.env"
-            echo NODE_ENV=production >> "frontend/.env"
             echo API_URL=${API_URL} >> "frontend/.env"
             cat frontend/.env
       - run:
           name: Build frontend
           command: |
             cd ./frontend
+            pwd
             npm i
             npm run build
       - run:
@@ -346,13 +345,13 @@ jobs:
       - image: python:3.7-alpine3.11
     steps:
       - checkout
-      - attach_workspace:
-          at: .
       - add_ssh_keys:
           fingerprints: 
             - "e2:c9:22:04:6c:5c:91:d9:6b:fa:69:21:5b:be:a7:ad"
+      - attach_workspace:
+          at: .
       - restore_cache:
-          keys: [backend-build]
+          keys: [backend-build-cache]
       - run:
           name: Install dependencies
           command: |
