@@ -325,7 +325,6 @@ jobs:
           name: Build frontend
           command: |
             cd ./frontend
-            npm cache clean --force
             npm i
             npm run build
       - run:
